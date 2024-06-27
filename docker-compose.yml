@@ -68,6 +68,7 @@ services:
     restart: unless-stopped
 
   logstash:
+    tty: true
     build:
       context: logstash/
       args:
@@ -75,6 +76,7 @@ services:
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+      - ./logstash/plugins/postgresql-42.7.3.jar:/usr/share/logstash/plugins/postgresql-42.7.3.jar:ro
     ports:
       - 5044:5044
       - 50000:50000/tcp
@@ -87,6 +89,7 @@ services:
       - elk
     depends_on:
       - elasticsearch
+      - postgres
     restart: unless-stopped
 
   kibana:
@@ -106,9 +109,53 @@ services:
       - elasticsearch
     restart: unless-stopped
 
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: test
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - elk
+    restart: unless-stopped
+
+  strapi:
+    # container_name: strapi
+    build:
+      context: strapi/
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_NAME: test
+      DATABASE_USERNAME: admin
+      DATABASE_PORT: 5432
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      DATABASE_PASSWORD: admin
+      NODE_ENV: development
+    volumes:
+      - ./strapi/_docker_volumes/public/uploads:/opt/app/public/uploads
+      - ./strapi/config:/opt/app/config
+      - ./strapi/src:/opt/app/src
+      - ./strapi/package.json:/opt/package.json
+    ports:
+      - "1337:1337"
+    depends_on:
+      - postgres
+    networks:
+      - elk
+
 networks:
   elk:
     driver: bridge
 
 volumes:
   elasticsearch:
+  postgres_data:

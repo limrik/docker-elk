@@ -1,0 +1,67 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stores",
+  "info": {
+    "singularName": "store",
+    "pluralName": "stores",
+    "displayName": "Stores",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "storeId": {
+      "type": "string"
+    },
+    "unitNumber": {
+      "type": "string"
+    },
+    "towerNumber": {
+      "type": "string"
+    },
+    "floor": {
+      "type": "string"
+    },
+    "categories": {
+      "type": "enumeration",
+      "enum": [
+        "Food & Beverage",
+        "Cosmetic",
+        "Convenience",
+        "Entertainment",
+        "Books & Stationary",
+        "Fashion",
+        "Technology"
+      ],
+      "required": false
+    },
+    "website": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "snapshotImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
